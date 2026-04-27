@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gestão Empresarial</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dal: #1B4F8A; --dal-bg: #EBF2FA; --dal-mid: #5B8EC4;
+  --ts:  #0D6B4A; --ts-bg:  #E4F5EE; --ts-mid:  #4DAA82;
+  --sol: #8B4F0D; --sol-bg: #FBF0E4; --sol-mid:  #D4892A;
+  --pes: #5A3D9A; --pes-bg: #EFEBFB; --pes-mid:  #9A7FD4;
+  --rec: #1A6B2E; --rec-bg: #E6F5EB;
+  --pag: #8B1A1A; --pag-bg: #FBE9E9;
+  --alr: #7A4A00; --alr-bg: #FEF3E2;
+  --ok:  #1A5E2A; --ok-bg:  #D6F0DC;
+  --dark: #0F1419; --mid: #3D4A52; --muted: #7A8A94; --faint: #F0F2F4;
+  --border: #E2E6EA; --border2: #C8D0D8;
+  --white: #FFFFFF; --surface: #F7F9FA;
+  --radius: 12px; --radius-sm: 8px; --radius-lg: 16px;
+  --shadow: 0 1px 4px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--surface); color: var(--dark); font-size: 14px; min-height: 100vh; }
+
+/* ── TOPBAR ── */
+.topbar { background: var(--dark); color: #fff; padding: 0 20px; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 200; }
+.topbar-logo { font-size: 15px; font-weight: 600; letter-spacing: -.3px; display: flex; align-items: center; gap: 10px; }
+.topbar-logo span { width: 28px; height: 28px; background: linear-gradient(135deg, var(--dal-mid), var(--ts-mid)); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+.topbar-date { font-size: 12px; color: rgba(255,255,255,.5); font-family: 'DM Mono', monospace; }
+
+/* ── EMPRESA SWITCHER ── */
+.emp-bar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; gap: 6px; height: 44px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.emp-bar::-webkit-scrollbar { display: none; }
+.etab { padding: 5px 14px; border-radius: 20px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500; white-space: nowrap; cursor: pointer; transition: all .15s; flex-shrink: 0; }
+.etab:hover { border-color: var(--border2); color: var(--mid); }
+.etab.todas.active { background: var(--dark); color: #fff; border-color: var(--dark); }
+.etab.dallogix.active { background: var(--dal-bg); color: var(--dal); border-color: var(--dal-mid); }
+.etab.ts.active { background: var(--ts-bg); color: var(--ts); border-color: var(--ts-mid); }
+.etab.solar.active { background: var(--sol-bg); color: var(--sol); border-color: var(--sol-mid); }
+
+/* ── NAV ── */
+.nav { background: var(--white); border-bottom: 1px solid var(--border); display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.nav::-webkit-scrollbar { display: none; }
+.ntab { padding: 13px 18px; font-size: 13px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; white-space: nowrap; cursor: pointer; transition: all .15s; flex-shrink: 0; display: flex; align-items: center; gap: 6px; }
+.ntab:hover { color: var(--dark); }
+.ntab.active { color: var(--dark); border-bottom-color: var(--dark); }
+.ntab .ico { font-size: 14px; }
+
+/* ── LAYOUT ── */
+.content { padding: 20px; max-width: 1100px; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* ── CARDS MÉTRICA ── */
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.mcard { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.mcard .ml { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+.mcard .mv { font-size: 22px; font-weight: 600; color: var(--dark); font-family: 'DM Mono', monospace; }
+.mcard .mv.verde { color: var(--rec); }
+.mcard .mv.vermelho { color: var(--pag); }
+.mcard .mv.azul { color: var(--dal); }
+.mcard .mv.roxo { color: var(--pes); }
+.mcard .ms { font-size: 11px; color: var(--muted); margin-top: 4px; }
+.mcard.accent-verde { border-left: 3px solid var(--ts-mid); }
+.mcard.accent-vermelho { border-left: 3px solid #D44; }
+.mcard.accent-azul { border-left: 3px solid var(--dal-mid); }
+.mcard.accent-laranja { border-left: 3px solid var(--sol-mid); }
+
+/* ── FORMULÁRIO ── */
+.form-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+.form-card .fc-title { font-size: 13px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.form-card .fc-title::before { content: ''; display: block; width: 3px; height: 14px; background: var(--dark); border-radius: 2px; }
+.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 10px; }
+.fg { display: flex; flex-direction: column; gap: 4px; }
+.fg label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+input, select, textarea { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--dark); background: var(--white); transition: border-color .15s; outline: none; }
+input:focus, select:focus, textarea:focus { border-color: var(--dal-mid); }
+textarea { resize: vertical; min-height: 72px; }
+.btn-add { width: 100%; padding: 11px; background: var(--dark); color: #fff; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; margin-top: 6px; transition: opacity .15s; letter-spacing: -.2px; }
+.btn-add:hover { opacity: .88; }
+.btn-add:active { transform: scale(.99); }
+
+/* ── LISTA DE ITENS ── */
+.list-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow); overflow: hidden; }
+.list-card .lc-header { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.list-card .lc-title { font-size: 13px; font-weight: 600; color: var(--dark); }
+.list-card .lc-count { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; background: var(--faint); padding: 2px 8px; border-radius: 20px; }
+.item { padding: 14px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; gap: 12px; transition: background .1s; }
+.item:last-child { border-bottom: none; }
+.item:hover { background: var(--faint); }
+.item-body { flex: 1; min-width: 0; }
+.item-title { font-size: 14px; font-weight: 500; color: var(--dark); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.item-sub { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.item-right { text-align: right; flex-shrink: 0; }
+.item-val { font-size: 15px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.item-val.verde { color: var(--rec); }
+.item-val.vermelho { color: var(--pag); }
+.btn-del { padding: 4px 10px; background: transparent; border: 1px solid var(--border2); border-radius: 6px; font-size: 11px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all .15s; margin-top: 4px; }
+.btn-del:hover { border-color: #D44; color: var(--pag); }
+.empty-state { padding: 40px 20px; text-align: center; color: var(--muted); }
+.empty-state .ei { font-size: 32px; margin-bottom: 8px; }
+.empty-state p { font-size: 13px; }
+
+/* ── BADGES ── */
+.badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.badge.dallogix { background: var(--dal-bg); color: var(--dal); }
+.badge.ts, .badge.ts-eletrica { background: var(--ts-bg); color: var(--ts); }
+.badge.solar { background: var(--sol-bg); color: var(--sol); }
+.badge.pessoal, .badge.geral { background: var(--pes-bg); color: var(--pes); }
+.badge.andamento { background: var(--dal-bg); color: var(--dal); }
+.badge.concluido, .badge.pago, .badge.recebido, .badge.comprado { background: var(--ok-bg); color: var(--ok); }
+.badge.pendente, .badge.confirmado, .badge.agendado { background: var(--alr-bg); color: var(--alr); }
+.badge.vencido, .badge.atrasado, .badge.cancelado { background: var(--pag-bg); color: var(--pag); }
+.badge.pausado, .badge.negociando { background: #F0EBF8; color: var(--pes); }
+.badge.receita { background: var(--rec-bg); color: var(--rec); }
+.badge.despesa { background: var(--pag-bg); color: var(--pag); }
+.badge.realizado { background: var(--ok-bg); color: var(--ok); }
+.dot-alert { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.dot-alert.vencido { background: var(--pag); }
+.dot-alert.proximo { background: var(--sol-mid); }
+.dot-alert.ok { background: var(--ts-mid); }
+
+/* ── EMPRESA CARDS DASHBOARD ── */
+.emp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.emp-card { border-radius: var(--radius); padding: 16px; border: 1.5px solid; }
+.emp-card.dallogix { background: var(--dal-bg); border-color: var(--dal-mid); }
+.emp-card.ts { background: var(--ts-bg); border-color: var(--ts-mid); }
+.emp-card.solar { background: var(--sol-bg); border-color: var(--sol-mid); }
+.emp-card .en { font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+.emp-card.dallogix .en { color: var(--dal); }
+.emp-card.ts .en { color: var(--ts); }
+.emp-card.solar .en { color: var(--sol); }
+.emp-nums { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.emp-num { }
+.emp-num .enl { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+.emp-num .env { font-size: 14px; font-weight: 600; font-family: 'DM Mono', monospace; color: var(--dark); }
+
+/* ── ALERTA VENCIMENTO ── */
+.alert-item { padding: 10px 14px; border-radius: var(--radius-sm); border: 1px solid; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+.alert-item.vencido { background: var(--pag-bg); border-color: #F5C1C1; }
+.alert-item.proximo { background: var(--alr-bg); border-color: #FAD9A0; }
+.alert-item .ai-desc { flex: 1; font-size: 13px; font-weight: 500; }
+.alert-item .ai-val { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+.alert-item.vencido .ai-val { color: var(--pag); }
+.alert-item.proximo .ai-val { color: var(--alr); }
+
+/* ── SEÇÃO TÍTULO ── */
+.sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.sec-head h2 { font-size: 18px; font-weight: 600; color: var(--dark); }
+.sec-head .sh-sub { font-size: 12px; color: var(--muted); }
+
+/* ── TOGGLE TIPO ── */
+.toggle-group { display: flex; gap: 4px; background: var(--faint); padding: 4px; border-radius: var(--radius-sm); }
+.toggle-btn { padding: 5px 14px; border-radius: 6px; border: none; background: transparent; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; transition: all .15s; font-family: 'DM Sans', sans-serif; }
+.toggle-btn.active { background: var(--white); color: var(--dark); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+
+/* ── DOIS COLS ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 640px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── CHECKLIST MATERIAIS ── */
+.check-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.check-item:last-child { border-bottom: none; }
+.check-item input[type=checkbox] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--ts); }
+.check-item .ci-body { flex: 1; }
+.check-item .ci-title { font-size: 13px; font-weight: 500; }
+.check-item .ci-sub { font-size: 11px; color: var(--muted); }
+.check-item.done .ci-title { text-decoration: line-through; color: var(--muted); }
+
+/* ── SCROLL ── */
+.list-scroll { max-height: 480px; overflow-y: auto; }
+.list-scroll::-webkit-scrollbar { width: 4px; }
+.list-scroll::-webkit-scrollbar-track { background: transparent; }
+.list-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .content { padding: 12px; }
+  .metric-grid { grid-template-columns: 1fr 1fr; }
+  .mcard .mv { font-size: 17px; }
+  .form-row { grid-template-columns: 1fr; }
+  .ntab { padding: 11px 13px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">
+    <span>G</span> Gestão Empresarial
+  </div>
+  <div class="topbar-date" id="top-date"></div>
+</div>
+
+<div class="emp-bar">
+  <button class="etab todas active" onclick="setEmp('todas',this)">Todas</button>
+  <button class="etab dallogix" onclick="setEmp('dallogix',this)">Dallogix</button>
+  <button class="etab ts" onclick="setEmp('ts',this)">TS Elétrica</button>
+  <button class="etab solar" onclick="setEmp('solar',this)">Solar</button>
+</div>
+
+<div class="nav">
+  <div class="ntab active" onclick="showTab('dashboard',this)"><span class="ico">◈</span> Visão Geral</div>
+  <div class="ntab" onclick="showTab('agenda',this)"><span class="ico">◷</span> Agenda</div>
+  <div class="ntab" onclick="showTab('projetos',this)"><span class="ico">◫</span> Projetos</div>
+  <div class="ntab" onclick="showTab('pagar',this)"><span class="ico">↑</span> A Pagar</div>
+  <div class="ntab" onclick="showTab('receber',this)"><span class="ico">↓</span> A Receber</div>
+  <div class="ntab" onclick="showTab('servico',this)"><span class="ico">⚙</span> Serviço Técnico</div>
+  <div class="ntab" onclick="showTab('financeiro',this)"><span class="ico">◉</span> Financeiro</div>
+  <div class="ntab" onclick="showTab('horas',this)"><span class="ico">◔</span> Horas</div>
+</div>
+
+<div class="content">
+
+<!-- ════ DASHBOARD ════ -->
+<div id="dashboard" class="section active">
+  <div class="sec-head"><h2>Visão Geral</h2><div class="sh-sub" id="dash-sub"></div></div>
+  <div class="metric-grid" id="dash-metrics"></div>
+  <div id="dash-emp-cards" class="emp-grid"></div>
+  <div class="two-col">
+    <div>
+      <div class="list-card" style="margin-bottom:16px">
+        <div class="lc-header"><span class="lc-title">Alertas de vencimento</span></div>
+        <div style="padding:12px 16px" id="dash-alertas"></div>
+      </div>
+      <div class="list-card">
+        <div class="lc-header"><span class="lc-title">Compromissos hoje</span><span class="lc-count" id="cnt-hoje">0</span></div>
+        <div class="list-scroll" id="dash-agenda"></div>
+      </div>
+    </div>
+    <div>
+      <div class="list-card" style="margin-bottom:16px">
+        <div class="lc-header"><span class="lc-title">Projetos em andamento</span><span class="lc-count" id="cnt-proj">0</span></div>
+        <div class="list-scroll" id="dash-projetos"></div>
+      </div>
+      <div class="list-card">
+        <div class="lc-header"><span class="lc-title">Serviços técnicos agendados</span><span class="lc-count" id="cnt-serv">0</span></div>
+        <div class="list-scroll" id="dash-servicos"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ AGENDA ════ -->
+<div id="agenda" class="section">
+  <div class="sec-head">
+    <h2>Agenda</h2>
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setAgFiltro('todos',this)">Todos</button>
+      <button class="toggle-btn" onclick="setAgFiltro('Empresarial',this)">Empresarial</button>
+      <button class="toggle-btn" onclick="setAgFiltro('Pessoal',this)">Pessoal</button>
+      <button class="toggle-btn" onclick="setAgFiltro('Reunião',this)">Reuniões</button>
+    </div>
+  </div>
+  <div class="form-card">
+    <div class="fc-title">Novo compromisso</div>
+    <div class="form-row">
+      <div class="fg"><label>Título</label><input id="ag-titulo" placeholder="Ex: Reunião com cliente..."></div>
+      <div class="fg"><label>Tipo</label>
+        <select id="ag-tipo">
+          <option>Empresarial</option><option>Pessoal</option><option>Reunião</option>
+          <option>Visita técnica</option><option>Entrega</option><option>Ligação</option>
+          <option>Campo</option><option>Médico</option><option>Família</option><option>Banco</option><option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Data</label><input type="date" id="ag-data"></div>
+      <div class="fg"><label>Hora</label><input type="time" id="ag-hora"></div>
+      <div class="fg"><label>Empresa / Âmbito</label>
+        <select id="ag-empresa">
+          <option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option>
+          <option value="solar">Solar</option><option value="pessoal">Pessoal</option><option value="geral">Geral</option>
+        </select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select id="ag-status"><option>Confirmado</option><option>Pendente</option><option>Realizado</option><option>Cancelado</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Participantes</label><input id="ag-part" placeholder="Ex: João, Maria..."></div>
+      <div class="fg"><label>Local</label><input id="ag-local" placeholder="Ex: Escritório, Teams..."></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Decisões / Ata resumida</label><textarea id="ag-ata" placeholder="O que foi decidido, tarefas geradas..."></textarea></div>
+    <div class="fg" style="margin-bottom:10px"><label>Observação</label><input id="ag-obs" placeholder="Detalhes adicionais..."></div>
+    <button class="btn-add" onclick="addAgenda()">+ Adicionar compromisso</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Compromissos</span><span class="lc-count" id="cnt-ag">0</span></div>
+    <div class="list-scroll" id="ag-list"></div>
+  </div>
+</div>
+
+<!-- ════ PROJETOS ════ -->
+<div id="projetos" class="section">
+  <div class="sec-head"><h2>Projetos</h2></div>
+  <div class="form-card">
+    <div class="fc-title">Novo projeto</div>
+    <div class="form-row">
+      <div class="fg"><label>Nome do projeto</label><input id="pj-nome" placeholder="Ex: Instalação painel solar..."></div>
+      <div class="fg"><label>Cliente</label><input id="pj-cliente" placeholder="Nome do cliente"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Empresa</label>
+        <select id="pj-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+      </div>
+      <div class="fg"><label>Status</label>
+        <select id="pj-status"><option value="pendente">Pendente</option><option value="andamento">Em andamento</option><option value="concluido">Concluído</option><option value="pausado">Pausado</option><option value="cancelado">Cancelado</option></select>
+      </div>
+      <div class="fg"><label>Valor contratado (R$)</label><input type="number" id="pj-valor" placeholder="0,00" step="0.01"></div>
+      <div class="fg"><label>Custo estimado (R$)</label><input type="number" id="pj-custo" placeholder="0,00" step="0.01"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Data início</label><input type="date" id="pj-inicio"></div>
+      <div class="fg"><label>Prazo</label><input type="date" id="pj-prazo"></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Descrição</label><textarea id="pj-desc" placeholder="Escopo, detalhes do projeto..."></textarea></div>
+    <button class="btn-add" onclick="addProjeto()">+ Adicionar projeto</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Projetos</span><span class="lc-count" id="cnt-pj">0</span></div>
+    <div class="list-scroll" id="pj-list"></div>
+  </div>
+</div>
+
+<!-- ════ CONTAS A PAGAR ════ -->
+<div id="pagar" class="section">
+  <div class="sec-head"><h2>Contas a Pagar</h2></div>
+  <div class="metric-grid" id="pag-metrics"></div>
+  <div class="form-card">
+    <div class="fc-title">Nova conta a pagar</div>
+    <div class="form-row">
+      <div class="fg"><label>Descrição</label><input id="cp-desc" placeholder="Ex: Fornecedor de cabos..."></div>
+      <div class="fg"><label>Empresa</label>
+        <select id="cp-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Valor (R$)</label><input type="number" id="cp-valor" placeholder="0,00" step="0.01"></div>
+      <div class="fg"><label>Vencimento</label><input type="date" id="cp-venc"></div>
+      <div class="fg"><label>Categoria</label>
+        <select id="cp-cat">
+          <option>Fornecedor</option><option>Material</option><option>Mão de obra</option>
+          <option>Aluguel</option><option>Energia</option><option>Internet</option>
+          <option>Imposto</option><option>Equipamento</option><option>Serviço</option><option>Outro</option>
+        </select>
+      </div>
+      <div class="fg"><label>Forma pgto</label>
+        <select id="cp-pgto"><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Débito automático</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Status</label>
+        <select id="cp-status"><option value="pendente">Pendente</option><option value="pago">Pago</option><option value="vencido">Vencido</option><option value="cancelado">Cancelado</option></select>
+      </div>
+      <div class="fg"><label>Data pagamento</label><input type="date" id="cp-datapg"></div>
+      <div class="fg"><label>Observação</label><input id="cp-obs" placeholder="Detalhes..."></div>
+    </div>
+    <button class="btn-add" onclick="addPagar()">+ Adicionar conta</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Contas a pagar</span><span class="lc-count" id="cnt-cp">0</span></div>
+    <div class="list-scroll" id="cp-list"></div>
+  </div>
+</div>
+
+<!-- ════ CONTAS A RECEBER ════ -->
+<div id="receber" class="section">
+  <div class="sec-head"><h2>Contas a Receber</h2></div>
+  <div class="metric-grid" id="rec-metrics"></div>
+  <div class="form-card">
+    <div class="fc-title">Nova conta a receber</div>
+    <div class="form-row">
+      <div class="fg"><label>Descrição</label><input id="cr-desc" placeholder="Ex: Pagamento projeto X..."></div>
+      <div class="fg"><label>Cliente</label><input id="cr-cliente" placeholder="Nome do cliente"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Empresa</label>
+        <select id="cr-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+      </div>
+      <div class="fg"><label>Valor (R$)</label><input type="number" id="cr-valor" placeholder="0,00" step="0.01"></div>
+      <div class="fg"><label>Vencimento</label><input type="date" id="cr-venc"></div>
+      <div class="fg"><label>Forma recebimento</label>
+        <select id="cr-pgto"><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Cheque</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Status</label>
+        <select id="cr-status"><option value="pendente">Pendente</option><option value="recebido">Recebido</option><option value="atrasado">Atrasado</option><option value="negociando">Negociando</option><option value="cancelado">Cancelado</option></select>
+      </div>
+      <div class="fg"><label>Data recebimento</label><input type="date" id="cr-datarec"></div>
+      <div class="fg"><label>Projeto vinculado</label><input id="cr-projeto" placeholder="Nome do projeto"></div>
+      <div class="fg"><label>Observação</label><input id="cr-obs" placeholder="Detalhes..."></div>
+    </div>
+    <button class="btn-add" onclick="addReceber()">+ Adicionar conta</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Contas a receber</span><span class="lc-count" id="cnt-cr">0</span></div>
+    <div class="list-scroll" id="cr-list"></div>
+  </div>
+</div>
+
+<!-- ════ SERVIÇO TÉCNICO ════ -->
+<div id="servico" class="section">
+  <div class="sec-head">
+    <h2>Serviço Técnico</h2>
+    <div class="toggle-group">
+      <button class="toggle-btn active" onclick="setServFiltro('os',this)">Ordens de Serviço</button>
+      <button class="toggle-btn" onclick="setServFiltro('mat',this)">Materiais / Compras</button>
+    </div>
+  </div>
+
+  <div id="serv-os">
+    <div class="form-card">
+      <div class="fc-title">Nova ordem de serviço</div>
+      <div class="form-row">
+        <div class="fg"><label>Serviço / Descrição</label><input id="os-desc" placeholder="Ex: Instalação QGBT..."></div>
+        <div class="fg"><label>Cliente / Local</label><input id="os-local" placeholder="Cliente ou endereço"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Empresa</label>
+          <select id="os-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+        </div>
+        <div class="fg"><label>Tipo</label>
+          <select id="os-tipo"><option>Instalação</option><option>Manutenção</option><option>Reparo</option><option>Vistoria</option><option>Orçamento</option><option>Montagem</option><option>Comissionamento</option><option>Outro</option></select>
+        </div>
+        <div class="fg"><label>Data</label><input type="date" id="os-data"></div>
+        <div class="fg"><label>Hora</label><input type="time" id="os-hora"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Status</label>
+          <select id="os-status"><option value="agendado">Agendado</option><option value="andamento">Em execução</option><option value="concluido">Concluído</option><option value="aguardando">Aguardando material</option><option value="cancelado">Cancelado</option></select>
+        </div>
+        <div class="fg"><label>Valor (R$)</label><input type="number" id="os-valor" placeholder="0,00" step="0.01"></div>
+        <div class="fg"><label>Materiais necessários</label><input id="os-mat" placeholder="Liste os principais..."></div>
+      </div>
+      <div class="fg" style="margin-bottom:10px"><label>Observação / Anotações de campo</label><textarea id="os-obs" placeholder="Detalhes técnicos, anotações do campo..."></textarea></div>
+      <button class="btn-add" onclick="addOS()">+ Adicionar OS</button>
+    </div>
+    <div class="list-card">
+      <div class="lc-header"><span class="lc-title">Ordens de serviço</span><span class="lc-count" id="cnt-os">0</span></div>
+      <div class="list-scroll" id="os-list"></div>
+    </div>
+  </div>
+
+  <div id="serv-mat" style="display:none">
+    <div class="metric-grid" id="mat-metrics"></div>
+    <div class="form-card">
+      <div class="fc-title">Novo material / compra</div>
+      <div class="form-row">
+        <div class="fg"><label>Material / Item</label><input id="mt-nome" placeholder="Ex: Cabo 6mm 750V..."></div>
+        <div class="fg"><label>Projeto / OS</label><input id="mt-proj" placeholder="Para qual projeto"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Empresa</label>
+          <select id="mt-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+        </div>
+        <div class="fg"><label>Qtd</label><input type="number" id="mt-qtd" placeholder="0" step="0.01"></div>
+        <div class="fg"><label>Unidade</label>
+          <select id="mt-unid"><option>UN</option><option>M</option><option>M²</option><option>M³</option><option>KG</option><option>CX</option><option>PC</option><option>RL</option><option>KIT</option><option>PAR</option></select>
+        </div>
+        <div class="fg"><label>Valor unit. (R$)</label><input type="number" id="mt-vunit" placeholder="0,00" step="0.01"></div>
+      </div>
+      <div class="form-row">
+        <div class="fg"><label>Fornecedor</label><input id="mt-forn" placeholder="Nome do fornecedor"></div>
+        <div class="fg"><label>Status compra</label>
+          <select id="mt-status"><option value="pendente">Pendente</option><option value="solicitado">Solicitado</option><option value="comprado">Comprado</option><option value="recebido">Recebido</option><option value="cancelado">Cancelado</option></select>
+        </div>
+        <div class="fg"><label>Data compra</label><input type="date" id="mt-data"></div>
+        <div class="fg"><label>Observação</label><input id="mt-obs" placeholder="Detalhes..."></div>
+      </div>
+      <button class="btn-add" onclick="addMaterial()">+ Adicionar material</button>
+    </div>
+    <div class="list-card">
+      <div class="lc-header"><span class="lc-title">Lista de materiais</span><span class="lc-count" id="cnt-mat">0</span></div>
+      <div class="list-scroll" id="mat-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ FINANCEIRO ════ -->
+<div id="financeiro" class="section">
+  <div class="sec-head"><h2>Financeiro</h2></div>
+  <div class="metric-grid" id="fin-metrics"></div>
+  <div class="form-card">
+    <div class="fc-title">Novo lançamento</div>
+    <div class="form-row">
+      <div class="fg"><label>Descrição</label><input id="fin-desc" placeholder="Ex: Recebimento projeto Y..."></div>
+      <div class="fg"><label>Tipo</label>
+        <select id="fin-tipo"><option value="receita">Receita</option><option value="despesa">Despesa</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Valor (R$)</label><input type="number" id="fin-valor" placeholder="0,00" step="0.01"></div>
+      <div class="fg"><label>Empresa</label>
+        <select id="fin-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+      </div>
+      <div class="fg"><label>Data</label><input type="date" id="fin-data"></div>
+      <div class="fg"><label>Categoria</label>
+        <select id="fin-cat">
+          <option>Venda</option><option>Serviço prestado</option><option>Recebimento</option>
+          <option>Material</option><option>Mão de obra</option><option>Fornecedor</option>
+          <option>Imposto</option><option>Aluguel</option><option>Energia</option>
+          <option>Salário</option><option>Pró-labore</option><option>Outro</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Forma pgto</label>
+        <select id="fin-pgto"><option>PIX</option><option>Boleto</option><option>Transferência</option><option>Dinheiro</option><option>Cartão</option><option>Cheque</option></select>
+      </div>
+      <div class="fg"><label>Projeto vinculado</label><input id="fin-proj" placeholder="Nome do projeto"></div>
+      <div class="fg"><label>Observação</label><input id="fin-obs" placeholder="Detalhes..."></div>
+    </div>
+    <button class="btn-add" onclick="addFin()">+ Lançar</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Lançamentos</span><span class="lc-count" id="cnt-fin">0</span></div>
+    <div class="list-scroll" id="fin-list"></div>
+  </div>
+</div>
+
+<!-- ════ HORAS ════ -->
+<div id="horas" class="section">
+  <div class="sec-head"><h2>Horas</h2></div>
+  <div class="metric-grid" id="hr-metrics"></div>
+  <div class="form-card">
+    <div class="fc-title">Registrar horas</div>
+    <div class="form-row">
+      <div class="fg"><label>Projeto</label><input id="hr-proj" placeholder="Nome do projeto"></div>
+      <div class="fg"><label>Empresa</label>
+        <select id="hr-empresa"><option value="dallogix">Dallogix</option><option value="ts">TS Elétrica</option><option value="solar">Solar</option></select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Data</label><input type="date" id="hr-data"></div>
+      <div class="fg"><label>Horas</label><input type="number" id="hr-horas" step="0.5" min="0" max="24" placeholder="Ex: 3.5"></div>
+      <div class="fg"><label>Profissional</label><input id="hr-prof" placeholder="Seu nome ou equipe"></div>
+      <div class="fg"><label>Valor/hora (R$)</label><input type="number" id="hr-vhora" step="0.01" placeholder="0,00"></div>
+    </div>
+    <div class="fg" style="margin-bottom:10px"><label>Atividade realizada</label><textarea id="hr-ativ" placeholder="Descreva o que foi executado..."></textarea></div>
+    <button class="btn-add" onclick="addHora()">+ Registrar</button>
+  </div>
+  <div class="list-card">
+    <div class="lc-header"><span class="lc-title">Registro de horas</span><span class="lc-count" id="cnt-hr">0</span></div>
+    <div class="list-scroll" id="hr-list"></div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ── STORAGE ──
+const KEYS = { agenda:'ge3_ag', projetos:'ge3_pj', pagar:'ge3_cp', receber:'ge3_cr', os:'ge3_os', materiais:'ge3_mat', financeiro:'ge3_fin', horas:'ge3_hr' };
+let DB = { agenda:[], projetos:[], pagar:[], receber:[], os:[], materiais:[], financeiro:[], horas:[] };
+let empAtiva = 'todas';
+let agFiltro = 'todos';
+let servFiltro = 'os';
+
+function sload(k){ try{ return JSON.parse(localStorage.getItem(k)||'[]'); }catch(e){ return []; } }
+function ssave(k,d){ try{ localStorage.setItem(k,JSON.stringify(d)); }catch(e){} }
+function loadAll(){ Object.keys(KEYS).forEach(k=>{ DB[k]=sload(KEYS[k]); }); renderAll(); }
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,5); }
+
+// ── UTILS ──
+function brl(v){ return 'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fd(d){ if(!d) return ''; const [y,m,dd]=d.split('-'); return `${dd}/${m}/${y}`; }
+function today(){ return new Date().toISOString().slice(0,10); }
+function diasVencer(d){ if(!d) return null; const diff=Math.round((new Date(d+'T00:00:00')- new Date(today()+'T00:00:00'))/(1000*60*60*24)); return diff; }
+
+function empLabel(e){ return {dallogix:'Dallogix',ts:'TS Elétrica',solar:'Solar',pessoal:'Pessoal',geral:'Geral'}[e]||e; }
+function statusLabel(s){ return {andamento:'Em andamento',concluido:'Concluído',pendente:'Pendente',pausado:'Pausado',cancelado:'Cancelado',agendado:'Agendado',aguardando:'Aguard. material',pago:'Pago',vencido:'Vencido',recebido:'Recebido',atrasado:'Atrasado',negociando:'Negociando',solicitado:'Solicitado',comprado:'Comprado',realizado:'Realizado'}[s]||s; }
+
+function badge(cls, txt){ return `<span class="badge ${cls}">${txt}</span>`; }
+function empBadge(e){ return badge(e, empLabel(e)); }
+function statusBadge(s){ return badge(s, statusLabel(s)); }
+
+// ── FILTRO ──
+function filtrar(arr){ return empAtiva==='todas'?arr:arr.filter(i=>i.empresa===empAtiva); }
+
+// ── NAV ──
+function setEmp(e, btn){
+  empAtiva = e;
+  document.querySelectorAll('.etab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAll();
+}
+
+function showTab(t, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setAgFiltro(f, btn){
+  agFiltro = f;
+  document.querySelectorAll('.toggle-group button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAgenda();
+}
+
+function setServFiltro(f, btn){
+  servFiltro = f;
+  document.getElementById('serv-os').style.display = f==='os'?'block':'none';
+  document.getElementById('serv-mat').style.display = f==='mat'?'block':'none';
+  document.querySelectorAll('#servico .toggle-group button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── DASHBOARD ──
+function renderDash(){
+  const ag = filtrar(DB.agenda);
+  const pj = filtrar(DB.projetos);
+  const cp = filtrar(DB.pagar);
+  const cr = filtrar(DB.receber);
+  const os = filtrar(DB.os);
+  const hj = today();
+
+  const rec = filtrar(DB.financeiro).filter(f=>f.tipo==='receita').reduce((s,f)=>s+Number(f.valor),0);
+  const desp = filtrar(DB.financeiro).filter(f=>f.tipo==='despesa').reduce((s,f)=>s+Number(f.valor),0);
+  const aPagar = cp.filter(c=>c.status==='pendente'||c.status==='vencido').reduce((s,c)=>s+Number(c.valor),0);
+  const aReceber = cr.filter(c=>c.status==='pendente'||c.status==='atrasado').reduce((s,c)=>s+Number(c.valor),0);
+
+  document.getElementById('dash-metrics').innerHTML = `
+    <div class="mcard accent-verde"><div class="ml">Receitas</div><div class="mv verde">${brl(rec)}</div></div>
+    <div class="mcard accent-vermelho"><div class="ml">Despesas</div><div class="mv vermelho">${brl(desp)}</div></div>
+    <div class="mcard accent-laranja"><div class="ml">A Pagar</div><div class="mv" style="color:var(--alr)">${brl(aPagar)}</div></div>
+    <div class="mcard accent-azul"><div class="ml">A Receber</div><div class="mv azul">${brl(aReceber)}</div><div class="ms">Saldo proj.: ${brl(rec-desp+aReceber-aPagar)}</div></div>
+  `;
+
+  // Empresa cards
+  if(empAtiva==='todas'){
+    const emps = [{k:'dallogix',n:'Dallogix'},{k:'ts',n:'TS Elétrica'},{k:'solar',n:'Solar'}];
+    document.getElementById('dash-emp-cards').innerHTML = emps.map(({k,n})=>{
+      const fr = DB.financeiro.filter(f=>f.empresa===k);
+      const er = fr.filter(f=>f.tipo==='receita').reduce((s,f)=>s+Number(f.valor),0);
+      const ed = fr.filter(f=>f.tipo==='despesa').reduce((s,f)=>s+Number(f.valor),0);
+      const ecp = DB.pagar.filter(c=>c.empresa===k&&(c.status==='pendente'||c.status==='vencido')).reduce((s,c)=>s+Number(c.valor),0);
+      const ecr = DB.receber.filter(c=>c.empresa===k&&(c.status==='pendente'||c.status==='atrasado')).reduce((s,c)=>s+Number(c.valor),0);
+      const epj = DB.projetos.filter(p=>p.empresa===k&&p.status==='andamento').length;
+      return `<div class="emp-card ${k}">
+        <div class="en">${n}</div>
+        <div class="emp-nums">
+          <div class="emp-num"><div class="enl">Receitas</div><div class="env">${brl(er)}</div></div>
+          <div class="emp-num"><div class="enl">Resultado</div><div class="env">${brl(er-ed)}</div></div>
+          <div class="emp-num"><div class="enl">Proj. ativos</div><div class="env">${epj}</div></div>
+          <div class="emp-num"><div class="enl">A pagar</div><div class="env" style="color:var(--pag)">${brl(ecp)}</div></div>
+          <div class="emp-num"><div class="enl">A receber</div><div class="env" style="color:var(--rec)">${brl(ecr)}</div></div>
+          <div class="emp-num"><div class="enl">Saldo proj.</div><div class="env">${brl(er-ed+ecr-ecp)}</div></div>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    document.getElementById('dash-emp-cards').innerHTML = '';
+  }
+
+  // Alertas
+  const todasContas = [
+    ...cp.filter(c=>c.status!=='pago'&&c.status!=='cancelado').map(c=>({...c, _tipo:'pagar'})),
+    ...cr.filter(c=>c.status!=='recebido'&&c.status!=='cancelado').map(c=>({...c, _tipo:'receber'}))
+  ];
+  const alertas = todasContas.map(c=>({...c, _dias: diasVencer(c._tipo==='pagar'?c.venc:c.venc)}))
+    .filter(c=>c._dias!==null && c._dias<=7)
+    .sort((a,b)=>a._dias-b._dias);
+
+  const alertEl = document.getElementById('dash-alertas');
+  if(!alertas.length){ alertEl.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum vencimento próximo. Tudo em dia!</div>'; }
+  else {
+    alertEl.innerHTML = alertas.slice(0,8).map(c=>{
+      const tipo = c._dias<0?'vencido':'proximo';
+      const dias = c._dias<0?`Vencido há ${Math.abs(c._dias)}d`:`Vence em ${c._dias}d`;
+      return `<div class="alert-item ${tipo}">
+        <div class="ai-desc">${c.desc||c.desc} <span style="font-size:11px;color:var(--muted)">${dias} · ${c._tipo==='pagar'?'PAGAR':'RECEBER'}</span></div>
+        <div class="ai-val">${brl(c.valor)}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Agenda hoje
+  const agHoje = ag.filter(a=>a.data===hj).sort((a,b)=>(a.hora||'').localeCompare(b.hora||''));
+  document.getElementById('cnt-hoje').textContent = agHoje.length;
+  document.getElementById('dash-agenda').innerHTML = agHoje.length ? agHoje.map(a=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${a.hora?a.hora+' — ':''}${a.titulo}</div>
+        <div class="item-sub">${empBadge(a.empresa)} ${statusBadge(a.status)} ${a.local?'· '+a.local:''}</div>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><p>Nenhum compromisso hoje</p></div>';
+
+  // Projetos andamento
+  const pjAnd = pj.filter(p=>p.status==='andamento');
+  document.getElementById('cnt-proj').textContent = pjAnd.length;
+  document.getElementById('dash-projetos').innerHTML = pjAnd.length ? pjAnd.slice(0,5).map(p=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${p.nome}</div>
+        <div class="item-sub">${empBadge(p.empresa)} ${p.cliente?'· '+p.cliente:''} ${p.prazo?'· Prazo: '+fd(p.prazo):''}</div>
+      </div>
+      ${p.valor?`<div class="item-right"><div class="item-val">${brl(p.valor)}</div></div>`:''}
+    </div>`).join('') : '<div class="empty-state"><p>Nenhum projeto em andamento</p></div>';
+
+  // Serviços agendados
+  const osAg = os.filter(o=>o.status==='agendado'||o.status==='andamento').sort((a,b)=>(a.data||'').localeCompare(b.data||''));
+  document.getElementById('cnt-serv').textContent = osAg.length;
+  document.getElementById('dash-servicos').innerHTML = osAg.length ? osAg.slice(0,5).map(o=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${o.desc}</div>
+        <div class="item-sub">${empBadge(o.empresa)} ${o.data?'· '+fd(o.data):''} ${o.hora?o.hora:''} · ${o.local||''}</div>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><p>Nenhum serviço agendado</p></div>';
+}
+
+// ── AGENDA ──
+function renderAgenda(){
+  let ag = filtrar(DB.agenda).sort((a,b)=>a.data.localeCompare(b.data)||(a.hora||'').localeCompare(b.hora||''));
+  if(agFiltro!=='todos') ag = ag.filter(a=>a.tipo===agFiltro);
+  document.getElementById('cnt-ag').textContent = ag.length;
+  document.getElementById('ag-list').innerHTML = ag.length ? ag.map(a=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${a.titulo}</div>
+        <div class="item-sub">${fd(a.data)} ${a.hora?'às '+a.hora:''} ${empBadge(a.empresa)} ${badge(a.status||'pendente', statusLabel(a.status||'pendente'))}</div>
+        ${a.local?`<div class="item-sub" style="margin-top:2px">📍 ${a.local}</div>`:''}
+        ${a.part?`<div class="item-sub" style="margin-top:2px">👥 ${a.part}</div>`:''}
+        ${a.ata?`<div style="margin-top:6px;padding:8px;background:var(--faint);border-radius:6px;font-size:12px;color:var(--mid)">📋 ${a.ata}</div>`:''}
+        ${a.obs?`<div class="item-sub" style="margin-top:2px">${a.obs}</div>`:''}
+      </div>
+      <div class="item-right"><button class="btn-del" onclick="del('agenda','${a.id}')">remover</button></div>
+    </div>`).join('') : '<div class="empty-state"><div class="ei">◷</div><p>Nenhum compromisso</p></div>';
+}
+
+// ── PROJETOS ──
+function renderProjetos(){
+  const pj = filtrar(DB.projetos).sort((a,b)=>a.status.localeCompare(b.status));
+  document.getElementById('cnt-pj').textContent = pj.length;
+  document.getElementById('pj-list').innerHTML = pj.length ? pj.map(p=>{
+    const margem = p.valor&&p.custo&&p.valor>0 ? ((p.valor-p.custo)/p.valor*100).toFixed(1)+'%' : '';
+    return `<div class="item">
+      <div class="item-body">
+        <div class="item-title">${p.nome}</div>
+        <div class="item-sub">${empBadge(p.empresa)} ${statusBadge(p.status)} ${p.cliente?'· '+p.cliente:''}</div>
+        ${p.prazo?`<div class="item-sub" style="margin-top:2px">Prazo: ${fd(p.prazo)}</div>`:''}
+        ${margem?`<div class="item-sub" style="margin-top:2px">Margem: <strong>${margem}</strong></div>`:''}
+        ${p.desc?`<div class="item-sub" style="margin-top:2px">${p.desc}</div>`:''}
+      </div>
+      <div class="item-right">
+        ${p.valor?`<div class="item-val">${brl(p.valor)}</div>`:''}
+        ${p.custo?`<div style="font-size:11px;color:var(--muted)">Custo: ${brl(p.custo)}</div>`:''}
+        <button class="btn-del" onclick="del('projetos','${p.id}')">remover</button>
+      </div>
+    </div>`;}).join('') : '<div class="empty-state"><div class="ei">◫</div><p>Nenhum projeto cadastrado</p></div>';
+}
+
+// ── CONTAS A PAGAR ──
+function renderPagar(){
+  const cp = filtrar(DB.pagar).sort((a,b)=>(a.venc||'').localeCompare(b.venc||''));
+  const pendente = cp.filter(c=>c.status==='pendente'||c.status==='vencido').reduce((s,c)=>s+Number(c.valor),0);
+  const pago = cp.filter(c=>c.status==='pago').reduce((s,c)=>s+Number(c.valor),0);
+  const vencido = cp.filter(c=>c.status==='vencido'||(c.status==='pendente'&&c.venc&&c.venc<today())).reduce((s,c)=>s+Number(c.valor),0);
+
+  document.getElementById('pag-metrics').innerHTML = `
+    <div class="mcard accent-vermelho"><div class="ml">Total pendente</div><div class="mv vermelho">${brl(pendente)}</div></div>
+    <div class="mcard accent-laranja"><div class="ml">Vencido</div><div class="mv" style="color:var(--pag)">${brl(vencido)}</div></div>
+    <div class="mcard accent-verde"><div class="ml">Já pago</div><div class="mv verde">${brl(pago)}</div></div>
+    <div class="mcard"><div class="ml">Total lançamentos</div><div class="mv">${cp.length}</div></div>
+  `;
+  document.getElementById('cnt-cp').textContent = cp.length;
+  document.getElementById('cp-list').innerHTML = cp.length ? cp.map(c=>{
+    const dias = diasVencer(c.venc);
+    const isVenc = c.status!=='pago' && dias!==null && dias<0;
+    const alertDot = c.status==='pago'?'ok':isVenc?'vencido':dias<=7?'proximo':'ok';
+    return `<div class="item">
+      <div class="dot-alert ${alertDot}" style="margin-top:18px"></div>
+      <div class="item-body">
+        <div class="item-title">${c.desc}</div>
+        <div class="item-sub">${empBadge(c.empresa)} ${statusBadge(c.status)} ${badge('',c.cat||'')} ${c.pgto?'· '+c.pgto:''}</div>
+        <div class="item-sub" style="margin-top:2px">Venc: ${fd(c.venc)} ${dias!==null&&c.status!=='pago'?`· ${dias<0?'<strong style="color:var(--pag)">Vencido há '+Math.abs(dias)+'d</strong>':dias===0?'<strong>Vence hoje</strong>':'Vence em '+dias+'d':''}</div>`:''}
+        ${c.obs?`<div class="item-sub" style="margin-top:2px">${c.obs}</div>`:''}
+      </div>
+      <div class="item-right">
+        <div class="item-val vermelho">${brl(c.valor)}</div>
+        ${c.status==='pendente'?`<button class="btn-del" style="border-color:var(--ts-mid);color:var(--ts)" onclick="marcarPago('pagar','${c.id}')">marcar pago</button>`:''}
+        <button class="btn-del" onclick="del('pagar','${c.id}')">remover</button>
+      </div>
+    </div>`;}).join('') : '<div class="empty-state"><div class="ei">↑</div><p>Nenhuma conta a pagar</p></div>';
+}
+
+// ── CONTAS A RECEBER ──
+function renderReceber(){
+  const cr = filtrar(DB.receber).sort((a,b)=>(a.venc||'').localeCompare(b.venc||''));
+  const pendente = cr.filter(c=>c.status==='pendente'||c.status==='atrasado').reduce((s,c)=>s+Number(c.valor),0);
+  const recebido = cr.filter(c=>c.status==='recebido').reduce((s,c)=>s+Number(c.valor),0);
+  const atrasado = cr.filter(c=>c.status==='atrasado'||(c.status==='pendente'&&c.venc&&c.venc<today())).reduce((s,c)=>s+Number(c.valor),0);
+
+  document.getElementById('rec-metrics').innerHTML = `
+    <div class="mcard accent-azul"><div class="ml">Total a receber</div><div class="mv azul">${brl(pendente)}</div></div>
+    <div class="mcard accent-vermelho"><div class="ml">Em atraso</div><div class="mv vermelho">${brl(atrasado)}</div></div>
+    <div class="mcard accent-verde"><div class="ml">Já recebido</div><div class="mv verde">${brl(recebido)}</div></div>
+    <div class="mcard"><div class="ml">Total lançamentos</div><div class="mv">${cr.length}</div></div>
+  `;
+  document.getElementById('cnt-cr').textContent = cr.length;
+  document.getElementById('cr-list').innerHTML = cr.length ? cr.map(c=>{
+    const dias = diasVencer(c.venc);
+    const isAtr = c.status!=='recebido' && dias!==null && dias<0;
+    const alertDot = c.status==='recebido'?'ok':isAtr?'vencido':dias<=7?'proximo':'ok';
+    return `<div class="item">
+      <div class="dot-alert ${alertDot}" style="margin-top:18px"></div>
+      <div class="item-body">
+        <div class="item-title">${c.desc} ${c.cliente?`<span style="font-weight:400;color:var(--muted)">· ${c.cliente}</span>`:''}</div>
+        <div class="item-sub">${empBadge(c.empresa)} ${statusBadge(c.status)} ${c.pgto?'· '+c.pgto:''} ${c.projeto?'· '+c.projeto:''}</div>
+        <div class="item-sub" style="margin-top:2px">Venc: ${fd(c.venc)} ${dias!==null&&c.status!=='recebido'?`· ${dias<0?'<strong style="color:var(--pag)">Atrasado '+Math.abs(dias)+'d</strong>':dias===0?'<strong>Vence hoje</strong>':'Vence em '+dias+'d'}`:''}</div>
+        ${c.obs?`<div class="item-sub" style="margin-top:2px">${c.obs}</div>`:''}
+      </div>
+      <div class="item-right">
+        <div class="item-val verde">${brl(c.valor)}</div>
+        ${c.status==='pendente'||c.status==='atrasado'?`<button class="btn-del" style="border-color:var(--ts-mid);color:var(--ts)" onclick="marcarRecebido('${c.id}')">marcar recebido</button>`:''}
+        <button class="btn-del" onclick="del('receber','${c.id}')">remover</button>
+      </div>
+    </div>`;}).join('') : '<div class="empty-state"><div class="ei">↓</div><p>Nenhuma conta a receber</p></div>';
+}
+
+// ── SERVIÇO TÉCNICO ──
+function renderOS(){
+  const os = filtrar(DB.os).sort((a,b)=>(a.data||'').localeCompare(b.data||''));
+  document.getElementById('cnt-os').textContent = os.length;
+  document.getElementById('os-list').innerHTML = os.length ? os.map(o=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${o.desc}</div>
+        <div class="item-sub">${empBadge(o.empresa)} ${statusBadge(o.status)} ${badge('',o.tipo||'')} ${o.local?'· '+o.local:''}</div>
+        ${o.data?`<div class="item-sub" style="margin-top:2px">${fd(o.data)} ${o.hora?'às '+o.hora:''}</div>`:''}
+        ${o.mat?`<div class="item-sub" style="margin-top:2px">📦 Materiais: ${o.mat}</div>`:''}
+        ${o.obs?`<div style="margin-top:6px;padding:8px;background:var(--faint);border-radius:6px;font-size:12px;color:var(--mid)">${o.obs}</div>`:''}
+      </div>
+      <div class="item-right">
+        ${o.valor?`<div class="item-val">${brl(o.valor)}</div>`:''}
+        <button class="btn-del" onclick="del('os','${o.id}')">remover</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="ei">⚙</div><p>Nenhuma OS cadastrada</p></div>';
+}
+
+function renderMateriais(){
+  const mat = filtrar(DB.materiais).sort((a,b)=>a.status.localeCompare(b.status));
+  const pendTotal = mat.filter(m=>m.status==='pendente'||m.status==='solicitado').reduce((s,m)=>s+Number(m.qtd||0)*Number(m.vunit||0),0);
+  const compTotal = mat.filter(m=>m.status==='comprado'||m.status==='recebido').reduce((s,m)=>s+Number(m.qtd||0)*Number(m.vunit||0),0);
+
+  document.getElementById('mat-metrics').innerHTML = `
+    <div class="mcard accent-laranja"><div class="ml">Pendente comprar</div><div class="mv" style="color:var(--alr)">${brl(pendTotal)}</div></div>
+    <div class="mcard accent-verde"><div class="ml">Já comprado</div><div class="mv verde">${brl(compTotal)}</div></div>
+    <div class="mcard"><div class="ml">Itens cadastrados</div><div class="mv">${mat.length}</div></div>
+  `;
+  document.getElementById('cnt-mat').textContent = mat.length;
+  document.getElementById('mat-list').innerHTML = mat.length ? mat.map(m=>{
+    const total = Number(m.qtd||0)*Number(m.vunit||0);
+    return `<div class="item">
+      <div class="item-body">
+        <div class="item-title">${m.nome}</div>
+        <div class="item-sub">${empBadge(m.empresa)} ${statusBadge(m.status)} ${m.proj?'· '+m.proj:''} ${m.forn?'· '+m.forn:''}</div>
+        <div class="item-sub" style="margin-top:2px">${m.qtd?m.qtd+' '+m.unid:''}${m.data?'· Compra: '+fd(m.data):''}</div>
+        ${m.obs?`<div class="item-sub" style="margin-top:2px">${m.obs}</div>`:''}
+      </div>
+      <div class="item-right">
+        ${total?`<div class="item-val">${brl(total)}</div><div style="font-size:11px;color:var(--muted)">${brl(m.vunit)}/un</div>`:''}
+        <button class="btn-del" onclick="del('materiais','${m.id}')">remover</button>
+      </div>
+    </div>`;}).join('') : '<div class="empty-state"><div class="ei">📦</div><p>Nenhum material cadastrado</p></div>';
+}
+
+// ── FINANCEIRO ──
+function renderFin(){
+  const fin = filtrar(DB.financeiro).sort((a,b)=>b.data.localeCompare(a.data));
+  const rec = fin.filter(f=>f.tipo==='receita').reduce((s,f)=>s+Number(f.valor),0);
+  const desp = fin.filter(f=>f.tipo==='despesa').reduce((s,f)=>s+Number(f.valor),0);
+
+  document.getElementById('fin-metrics').innerHTML = `
+    <div class="mcard accent-verde"><div class="ml">Receitas</div><div class="mv verde">${brl(rec)}</div></div>
+    <div class="mcard accent-vermelho"><div class="ml">Despesas</div><div class="mv vermelho">${brl(desp)}</div></div>
+    <div class="mcard accent-azul"><div class="ml">Resultado</div><div class="mv ${rec-desp>=0?'verde':'vermelho'}">${brl(rec-desp)}</div></div>
+    <div class="mcard"><div class="ml">Lançamentos</div><div class="mv">${fin.length}</div></div>
+  `;
+  document.getElementById('cnt-fin').textContent = fin.length;
+  document.getElementById('fin-list').innerHTML = fin.length ? fin.map(f=>`
+    <div class="item">
+      <div class="dot-alert ${f.tipo==='receita'?'ok':'vencido'}" style="margin-top:18px"></div>
+      <div class="item-body">
+        <div class="item-title">${f.desc}</div>
+        <div class="item-sub">${fd(f.data)} ${empBadge(f.empresa)} ${badge(f.tipo,f.tipo==='receita'?'Receita':'Despesa')} ${f.cat?'· '+f.cat:''} ${f.pgto?'· '+f.pgto:''}</div>
+        ${f.proj?`<div class="item-sub" style="margin-top:2px">Projeto: ${f.proj}</div>`:''}
+        ${f.obs?`<div class="item-sub" style="margin-top:2px">${f.obs}</div>`:''}
+      </div>
+      <div class="item-right">
+        <div class="item-val ${f.tipo==='receita'?'verde':'vermelho'}">${f.tipo==='receita'?'+':'-'}${brl(f.valor)}</div>
+        <button class="btn-del" onclick="del('financeiro','${f.id}')">remover</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="ei">◉</div><p>Nenhum lançamento</p></div>';
+}
+
+// ── HORAS ──
+function renderHoras(){
+  const hr = filtrar(DB.horas).sort((a,b)=>b.data.localeCompare(a.data));
+  const total = hr.reduce((s,h)=>s+Number(h.horas),0);
+  const valorTotal = hr.reduce((s,h)=>s+(Number(h.horas)*Number(h.vhora||0)),0);
+
+  document.getElementById('hr-metrics').innerHTML = `
+    <div class="mcard accent-azul"><div class="ml">Total horas</div><div class="mv azul">${total.toFixed(1)}h</div></div>
+    <div class="mcard accent-verde"><div class="ml">Valor total</div><div class="mv verde">${brl(valorTotal)}</div></div>
+    <div class="mcard"><div class="ml">Registros</div><div class="mv">${hr.length}</div></div>
+  `;
+  document.getElementById('cnt-hr').textContent = hr.length;
+  document.getElementById('hr-list').innerHTML = hr.length ? hr.map(h=>`
+    <div class="item">
+      <div class="item-body">
+        <div class="item-title">${h.proj}</div>
+        <div class="item-sub">${fd(h.data)} ${empBadge(h.empresa)} ${h.prof?'· '+h.prof:''}</div>
+        ${h.ativ?`<div style="margin-top:6px;padding:8px;background:var(--faint);border-radius:6px;font-size:12px;color:var(--mid)">${h.ativ}</div>`:''}
+      </div>
+      <div class="item-right">
+        <div class="item-val">${Number(h.horas).toFixed(1)}h</div>
+        ${h.vhora?`<div style="font-size:11px;color:var(--muted)">${brl(Number(h.horas)*Number(h.vhora))}</div>`:''}
+        <button class="btn-del" onclick="del('horas','${h.id}')">remover</button>
+      </div>
+    </div>`).join('') : '<div class="empty-state"><div class="ei">◔</div><p>Nenhuma hora registrada</p></div>';
+}
+
+function renderAll(){
+  renderDash(); renderAgenda(); renderProjetos();
+  renderPagar(); renderReceber(); renderOS(); renderMateriais();
+  renderFin(); renderHoras();
+}
+
+// ── ADDS ──
+function addAgenda(){
+  const t = document.getElementById('ag-titulo').value.trim();
+  const d = document.getElementById('ag-data').value;
+  if(!t||!d){ alert('Informe título e data'); return; }
+  DB.agenda.push({ id:uid(), titulo:t, tipo:document.getElementById('ag-tipo').value, data:d, hora:document.getElementById('ag-hora').value, empresa:document.getElementById('ag-empresa').value, status:document.getElementById('ag-status').value, part:document.getElementById('ag-part').value.trim(), local:document.getElementById('ag-local').value.trim(), ata:document.getElementById('ag-ata').value.trim(), obs:document.getElementById('ag-obs').value.trim() });
+  ssave(KEYS.agenda, DB.agenda);
+  ['ag-titulo','ag-hora','ag-part','ag-local','ag-ata','ag-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addProjeto(){
+  const n = document.getElementById('pj-nome').value.trim();
+  if(!n){ alert('Informe o nome'); return; }
+  DB.projetos.push({ id:uid(), nome:n, cliente:document.getElementById('pj-cliente').value.trim(), empresa:document.getElementById('pj-empresa').value, status:document.getElementById('pj-status').value, valor:document.getElementById('pj-valor').value, custo:document.getElementById('pj-custo').value, inicio:document.getElementById('pj-inicio').value, prazo:document.getElementById('pj-prazo').value, desc:document.getElementById('pj-desc').value.trim() });
+  ssave(KEYS.projetos, DB.projetos);
+  ['pj-nome','pj-cliente','pj-valor','pj-custo','pj-inicio','pj-prazo','pj-desc'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addPagar(){
+  const d = document.getElementById('cp-desc').value.trim();
+  const v = document.getElementById('cp-valor').value;
+  if(!d||!v){ alert('Informe descrição e valor'); return; }
+  DB.pagar.push({ id:uid(), desc:d, empresa:document.getElementById('cp-empresa').value, valor:v, venc:document.getElementById('cp-venc').value, cat:document.getElementById('cp-cat').value, pgto:document.getElementById('cp-pgto').value, status:document.getElementById('cp-status').value, datapg:document.getElementById('cp-datapg').value, obs:document.getElementById('cp-obs').value.trim() });
+  ssave(KEYS.pagar, DB.pagar);
+  ['cp-desc','cp-valor','cp-venc','cp-datapg','cp-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addReceber(){
+  const d = document.getElementById('cr-desc').value.trim();
+  const v = document.getElementById('cr-valor').value;
+  if(!d||!v){ alert('Informe descrição e valor'); return; }
+  DB.receber.push({ id:uid(), desc:d, cliente:document.getElementById('cr-cliente').value.trim(), empresa:document.getElementById('cr-empresa').value, valor:v, venc:document.getElementById('cr-venc').value, pgto:document.getElementById('cr-pgto').value, status:document.getElementById('cr-status').value, datarec:document.getElementById('cr-datarec').value, projeto:document.getElementById('cr-projeto').value.trim(), obs:document.getElementById('cr-obs').value.trim() });
+  ssave(KEYS.receber, DB.receber);
+  ['cr-desc','cr-cliente','cr-valor','cr-venc','cr-datarec','cr-projeto','cr-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addOS(){
+  const d = document.getElementById('os-desc').value.trim();
+  if(!d){ alert('Informe a descrição do serviço'); return; }
+  DB.os.push({ id:uid(), desc:d, local:document.getElementById('os-local').value.trim(), empresa:document.getElementById('os-empresa').value, tipo:document.getElementById('os-tipo').value, data:document.getElementById('os-data').value, hora:document.getElementById('os-hora').value, status:document.getElementById('os-status').value, valor:document.getElementById('os-valor').value, mat:document.getElementById('os-mat').value.trim(), obs:document.getElementById('os-obs').value.trim() });
+  ssave(KEYS.os, DB.os);
+  ['os-desc','os-local','os-hora','os-valor','os-mat','os-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addMaterial(){
+  const n = document.getElementById('mt-nome').value.trim();
+  if(!n){ alert('Informe o material'); return; }
+  DB.materiais.push({ id:uid(), nome:n, proj:document.getElementById('mt-proj').value.trim(), empresa:document.getElementById('mt-empresa').value, qtd:document.getElementById('mt-qtd').value, unid:document.getElementById('mt-unid').value, vunit:document.getElementById('mt-vunit').value, forn:document.getElementById('mt-forn').value.trim(), status:document.getElementById('mt-status').value, data:document.getElementById('mt-data').value, obs:document.getElementById('mt-obs').value.trim() });
+  ssave(KEYS.materiais, DB.materiais);
+  ['mt-nome','mt-proj','mt-qtd','mt-vunit','mt-forn','mt-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addFin(){
+  const d = document.getElementById('fin-desc').value.trim();
+  const v = document.getElementById('fin-valor').value;
+  const dt = document.getElementById('fin-data').value;
+  if(!d||!v||!dt){ alert('Preencha descrição, valor e data'); return; }
+  DB.financeiro.push({ id:uid(), desc:d, tipo:document.getElementById('fin-tipo').value, valor:v, empresa:document.getElementById('fin-empresa').value, data:dt, cat:document.getElementById('fin-cat').value, pgto:document.getElementById('fin-pgto').value, proj:document.getElementById('fin-proj').value.trim(), obs:document.getElementById('fin-obs').value.trim() });
+  ssave(KEYS.financeiro, DB.financeiro);
+  ['fin-desc','fin-valor','fin-proj','fin-obs'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+function addHora(){
+  const p = document.getElementById('hr-proj').value.trim();
+  const h = document.getElementById('hr-horas').value;
+  const d = document.getElementById('hr-data').value;
+  if(!p||!h||!d){ alert('Informe projeto, horas e data'); return; }
+  DB.horas.push({ id:uid(), proj:p, empresa:document.getElementById('hr-empresa').value, data:d, horas:h, prof:document.getElementById('hr-prof').value.trim(), vhora:document.getElementById('hr-vhora').value, ativ:document.getElementById('hr-ativ').value.trim() });
+  ssave(KEYS.horas, DB.horas);
+  ['hr-proj','hr-horas','hr-prof','hr-vhora','hr-ativ'].forEach(id=>document.getElementById(id).value='');
+  renderAll();
+}
+
+// ── AÇÕES ──
+function del(col, id){ DB[col]=DB[col].filter(i=>i.id!==id); ssave(KEYS[col],DB[col]); renderAll(); }
+
+function marcarPago(col, id){
+  const item = DB[col].find(i=>i.id===id);
+  if(item){ item.status='pago'; item.datapg=today(); ssave(KEYS[col],DB[col]); renderAll(); }
+}
+function marcarRecebido(id){
+  const item = DB.receber.find(i=>i.id===id);
+  if(item){ item.status='recebido'; item.datarec=today(); ssave(KEYS.receber,DB.receber); renderAll(); }
+}
+
+// ── INIT ──
+const hj = today();
+document.getElementById('top-date').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+document.getElementById('dash-sub').textContent = new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+['ag-data','fin-data','hr-data','os-data'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=hj; });
+
+loadAll();
+</script>
+</body>
+</html>
